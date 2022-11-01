@@ -45,6 +45,7 @@ android {
 
 dependencies {
     implementation project(':arouter-api')
+    implementation project(':arouter-annotation')
 
     // 开发中依赖对方的 service 包
     implementation project(':module-java-export')
