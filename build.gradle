@@ -3,11 +3,17 @@ buildscript {
     ext.arouter_register_version = '1.0.2'
 
     repositories {
-        maven {
-            url 'http://dl.bintray.com/jetbrains/intellij-plugin-service'
-        }
-        mavenCentral()
+        mavenLocal()
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/spring' }
+        maven { url 'https://maven.aliyun.com/repository/grails-core' }
+        maven { url 'https://maven.aliyun.com/repository/apache-snapshots' }
         google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+
     }
 
     dependencies {
@@ -22,10 +28,15 @@ buildscript {
 allprojects {
     repositories {
         mavenLocal()
-        mavenCentral()
-        maven {
-            url "https://s01.oss.sonatype.org/content/repositories/releases/"
-        }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/spring' }
+        maven { url 'https://maven.aliyun.com/repository/grails-core' }
+        maven { url 'https://maven.aliyun.com/repository/apache-snapshots' }
         google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+
     }
 }

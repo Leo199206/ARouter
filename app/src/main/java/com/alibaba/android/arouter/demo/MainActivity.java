@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+
 
 import com.alibaba.android.arouter.demo.module1.testactivity.TestDynamicActivity;
 import com.alibaba.android.arouter.demo.service.model.TestObj;
@@ -70,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.normalNavigation:
                 ARouter.getInstance()
-                        .build("/test/activity2")
+                        .build("/kotlin/activity2")
                         .navigation();
 
                 // 也可以通过依赖对方提供的二方包来约束入参
@@ -86,11 +88,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.normalNavigationWithParams:
                 // ARouter.getInstance()
-                //         .build("/test/activity2")
+                //         .build("/kotlin/activity2")
                 //         .withString("key1", "value1")
                 //         .navigation();
 
-                Uri testUriMix = Uri.parse("arouter://m.aliyun.com/test/activity2");
+                Uri testUriMix = Uri.parse("arouter://m.aliyun.com/kotlin/activity2");
                 ARouter.getInstance().build(testUriMix)
                         .withString("key1", "value1")
                         .navigation();
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.oldVersionAnim:
                 ARouter.getInstance()
-                        .build("/test/activity2")
+                        .build("/kotlin/activity2")
                         .withTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
                         .navigation(this);
                 break;
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             makeScaleUpAnimation(v, v.getWidth() / 2, v.getHeight() / 2, 0, 0);
 
                     ARouter.getInstance()
-                            .build("/test/activity2")
+                            .build("/kotlin/activity2")
                             .withOptionsCompat(compat)
                             .navigation();
                 } else {
@@ -200,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.normalNavigation2:
                 ARouter.getInstance()
-                        .build("/test/activity2")
+                        .build("/kotlin/activity2")
                         .navigation(this, 666);
                 break;
             case R.id.getFragment:

@@ -9,7 +9,8 @@ import com.alibaba.android.arouter.demo.module1.R;
 import com.alibaba.android.arouter.facade.annotation.Autowired;
 import com.alibaba.android.arouter.facade.annotation.Route;
 
-@Route(path = "/test/activity2")
+//@Route(path = "/test/activity2")
+@Route(path = "/kotlin/activity2")
 public class Test2Activity extends AppCompatActivity {
 
     @Autowired

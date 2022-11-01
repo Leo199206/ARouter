@@ -38,6 +38,7 @@ import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -149,8 +150,11 @@ public class RouteProcessor extends BaseProcessor {
                     ClassName.get(Map.class),
                     ClassName.get(String.class),
                     ParameterizedTypeName.get(
-                            ClassName.get(Class.class),
-                            WildcardTypeName.subtypeOf(ClassName.get(type_IRouteGroup))
+                            ClassName.get(List.class),
+                            ParameterizedTypeName.get(
+                                    ClassName.get(Class.class),
+                                    WildcardTypeName.subtypeOf(ClassName.get(type_IRouteGroup))
+                            )
                     )
             );
 
@@ -312,7 +316,7 @@ public class RouteProcessor extends BaseProcessor {
                 }
 
                 // Generate groups
-                String groupFileName = NAME_OF_GROUP + groupName;
+                String groupFileName = NAME_OF_GROUP + moduleName + SEPARATOR + groupName;
                 JavaFile.builder(PACKAGE_OF_GENERATE_FILE,
                         TypeSpec.classBuilder(groupFileName)
                                 .addJavadoc(WARNING_TIPS)
@@ -326,11 +330,31 @@ public class RouteProcessor extends BaseProcessor {
                 rootMap.put(groupName, groupFileName);
                 docSource.put(groupName, routeDocList);
             }
+            MethodSpec.Builder smartRootPutBuilder = MethodSpec.methodBuilder("smartRootPut")
+                    .addJavadoc("AUTO GENERATE CODE --- DO NOT EDIT!!!!\n")
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(rootParamSpec)
+                    .addParameter(String.class, "key")
+                    .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(ClassName.get(type_IRouteGroup))), "value")
+                    .addStatement("$T<$T<? extends $T>> old = routes.get(key)", List.class, Class.class, type_IRouteGroup.asType())
+                    .addCode("if (old == null) {\n")
+                    .addCode("    old = new $T<>();\n", ArrayList.class)
+                    .addCode("    routes.put(key, old);\n")
+                    .addCode("}\n")
+                    .addCode("\n")
+                    .addCode("if (!old.contains(value)) {\n")
+                    .addCode("    old.add(value);\n")
+                    .addCode("}\n");
 
             if (MapUtils.isNotEmpty(rootMap)) {
                 // Generate root meta by group name, it must be generated before root, then I can find out the class of group.
                 for (Map.Entry<String, String> entry : rootMap.entrySet()) {
-                    loadIntoMethodOfRootBuilder.addStatement("routes.put($S, $T.class)", entry.getKey(), ClassName.get(PACKAGE_OF_GENERATE_FILE, entry.getValue()));
+
+                    logger.info(">>> Generated group addStatement: key= " + entry.getKey() + " " +
+                            "value =" + entry.getValue() +
+                            "<<<");
+//                    loadIntoMethodOfRootBuilder.addStatement("routes.put($S, $T.class)", entry.getKey(), ClassName.get(PACKAGE_OF_GENERATE_FILE, entry.getValue()));
+                    loadIntoMethodOfRootBuilder.addStatement("smartRootPut(routes, $S, $T.class)", entry.getKey(), ClassName.get(PACKAGE_OF_GENERATE_FILE, entry.getValue()));
                 }
             }
 
@@ -362,6 +386,7 @@ public class RouteProcessor extends BaseProcessor {
                             .addSuperinterface(ClassName.get(elementUtils.getTypeElement(ITROUTE_ROOT)))
                             .addModifiers(PUBLIC)
                             .addMethod(loadIntoMethodOfRootBuilder.build())
+                            .addMethod(smartRootPutBuilder.build())
                             .build()
             ).build().writeTo(mFiler);
 
