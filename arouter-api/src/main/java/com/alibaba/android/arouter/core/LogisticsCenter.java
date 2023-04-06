@@ -85,8 +85,8 @@ public class LogisticsCenter {
                 } else if (obj instanceof IInterceptorGroup) {
                     registerInterceptor((IInterceptorGroup) obj);
                 } else {
-                    logger.info(TAG, "register failed, class name: " + className
-                            + " should implements one of IRouteRoot/IProviderGroup/IInterceptorGroup.");
+                    logger.info(TAG, "register failed, class name: " + className + " should " +
+                            "implements one of IRouteRoot/IProviderGroup/IInterceptorGroup.");
                 }
             } catch (Exception e) {
                 logger.error(TAG, "register class error:" + className, e);
@@ -97,7 +97,8 @@ public class LogisticsCenter {
     /**
      * method for arouter-auto-register plugin to register Routers
      *
-     * @param routeRoot IRouteRoot implementation class in the package: com.alibaba.android.arouter.core.routers
+     * @param routeRoot IRouteRoot implementation class in the package: com.alibaba.android
+     *                  .arouter.core.routers
      */
     private static void registerRouteRoot(IRouteRoot routeRoot) {
         markRegisteredByPlugin();
@@ -109,7 +110,8 @@ public class LogisticsCenter {
     /**
      * method for arouter-auto-register plugin to register Interceptors
      *
-     * @param interceptorGroup IInterceptorGroup implementation class in the package: com.alibaba.android.arouter.core.routers
+     * @param interceptorGroup IInterceptorGroup implementation class in the package: com.alibaba
+     *                         .android.arouter.core.routers
      */
     private static void registerInterceptor(IInterceptorGroup interceptorGroup) {
         markRegisteredByPlugin();
@@ -121,7 +123,8 @@ public class LogisticsCenter {
     /**
      * method for arouter-auto-register plugin to register Providers
      *
-     * @param providerGroup IProviderGroup implementation class in the package: com.alibaba.android.arouter.core.routers
+     * @param providerGroup IProviderGroup implementation class in the package: com.alibaba
+     *                      .android.arouter.core.routers
      */
     private static void registerProvider(IProviderGroup providerGroup) {
         markRegisteredByPlugin();
@@ -164,13 +167,17 @@ public class LogisticsCenter {
                         context.getSharedPreferences(AROUTER_SP_CACHE_KEY, Context.MODE_PRIVATE).edit().putStringSet(AROUTER_SP_KEY_MAP, routerMap).apply();
                     }
 
-                    PackageUtils.updateVersion(context);    // Save new version name when router map update finishes.
+                    PackageUtils.updateVersion(context);    // Save new version name when router
+                    // map update finishes.
                 } else {
                     logger.info(TAG, "Load router map from cache.");
-                    routerMap = new HashSet<>(context.getSharedPreferences(AROUTER_SP_CACHE_KEY, Context.MODE_PRIVATE).getStringSet(AROUTER_SP_KEY_MAP, new HashSet<String>()));
+                    routerMap = new HashSet<>(context.getSharedPreferences(AROUTER_SP_CACHE_KEY,
+                            Context.MODE_PRIVATE).getStringSet(AROUTER_SP_KEY_MAP,
+                            new HashSet<String>()));
                 }
 
-                logger.info(TAG, "Find router map finished, map size = " + routerMap.size() + ", cost " + (System.currentTimeMillis() - startInit) + " ms.");
+                logger.info(TAG, "Find router map finished, map size = " + routerMap.size() + ", "
+                        + "cost " + (System.currentTimeMillis() - startInit) + " ms.");
                 startInit = System.currentTimeMillis();
 
                 for (String className : routerMap) {
@@ -187,14 +194,18 @@ public class LogisticsCenter {
                 }
             }
 
-            logger.info(TAG, "Load root element finished, cost " + (System.currentTimeMillis() - startInit) + " ms.");
+            logger.info(TAG,
+                    "Load root element finished, cost " + (System.currentTimeMillis() - startInit) + " ms.");
 
             if (Warehouse.groupsIndex.size() == 0) {
                 logger.error(TAG, "No mapping files were found, check your configuration please!");
             }
 
             if (ARouter.debuggable()) {
-                logger.debug(TAG, String.format(Locale.getDefault(), "LogisticsCenter has already been loaded, GroupIndex[%d], InterceptorIndex[%d], ProviderIndex[%d]", Warehouse.groupsIndex.size(), Warehouse.interceptorsIndex.size(), Warehouse.providersIndex.size()));
+                logger.debug(TAG, String.format(Locale.getDefault(), "LogisticsCenter has " +
+                        "already" + " been loaded, GroupIndex[%d], InterceptorIndex[%d], " +
+                        "ProviderIndex[%d]", Warehouse.groupsIndex.size(),
+                        Warehouse.interceptorsIndex.size(), Warehouse.providersIndex.size()));
             }
         } catch (Exception e) {
             throw new HandlerException(TAG + "ARouter init logistics center exception! [" + e.getMessage() + "]");
@@ -236,19 +247,34 @@ public class LogisticsCenter {
                 // Load route and cache it into memory, then delete from metas.
                 try {
                     if (ARouter.debuggable()) {
-                        logger.debug(TAG, String.format(Locale.getDefault(), "The group [%s] starts loading, trigger by [%s]", postcard.getGroup(), postcard.getPath()));
+                        logger.debug(TAG, String.format(Locale.getDefault(), "The group [%s] " +
+                                "starts loading, trigger by [%s]", postcard.getGroup(),
+                                postcard.getPath()));
                     }
 
                     addRouteGroupDynamic(postcard.getGroup(), null);
 
                     if (ARouter.debuggable()) {
-                        logger.debug(TAG, String.format(Locale.getDefault(), "The group [%s] has already been loaded, trigger by [%s]", postcard.getGroup(), postcard.getPath()));
+                        logger.debug(TAG, String.format(Locale.getDefault(), "The group [%s] has "
+                                + "already been loaded, trigger by [%s]", postcard.getGroup(),
+                                postcard.getPath()));
+                    }
+                    if (!postcard.isAddRouteGroupDynamic()) {
+                        try {
+                            postcard.setAddRouteGroupDynamic(true);
+                            completion(postcard);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            throw new HandlerException(TAG + "Fatal exception when loading group "
+                                    + "meta" + ".retry fail [" + e.getMessage() + "]");
+                        }
+                    }else {
+                        throw new HandlerException(TAG + "Fatal exception when loading group "
+                                + "meta" + ".retry fail !!!!");
                     }
                 } catch (Exception e) {
                     throw new HandlerException(TAG + "Fatal exception when loading group meta. [" + e.getMessage() + "]");
                 }
-
-                completion(postcard);   // Reload
             }
         } else {
             postcard.setDestination(routeMeta.getDestination());
@@ -264,14 +290,13 @@ public class LogisticsCenter {
                 if (MapUtils.isNotEmpty(paramsType)) {
                     // Set value by its type, just for params which annotation by @Param
                     for (Map.Entry<String, Integer> params : paramsType.entrySet()) {
-                        setValue(postcard,
-                                params.getValue(),
-                                params.getKey(),
+                        setValue(postcard, params.getValue(), params.getKey(),
                                 resultMap.get(params.getKey()));
                     }
 
                     // Save params name which need auto inject.
-                    postcard.getExtras().putStringArray(ARouter.AUTO_INJECT, paramsType.keySet().toArray(new String[]{}));
+                    postcard.getExtras().putStringArray(ARouter.AUTO_INJECT,
+                            paramsType.keySet().toArray(new String[]{}));
                 }
 
                 // Save raw uri
@@ -281,7 +306,8 @@ public class LogisticsCenter {
             switch (routeMeta.getType()) {
                 case PROVIDER:  // if the route is provider, should find its instance
                     // Its provider, so it must implement IProvider
-                    Class<? extends IProvider> providerMeta = (Class<? extends IProvider>) routeMeta.getDestination();
+                    Class<? extends IProvider> providerMeta =
+                            (Class<? extends IProvider>) routeMeta.getDestination();
                     IProvider instance = Warehouse.providers.get(providerMeta);
                     if (null == instance) { // There's no instance of this provider
                         IProvider provider;
@@ -363,7 +389,8 @@ public class LogisticsCenter {
 //        if (Warehouse.groupsIndex.containsKey(groupName)){
 //            // If this group is included, but it has not been loaded
 //            // load this group first, because dynamic route has high priority.
-//            Warehouse.groupsIndex.get(groupName).getConstructor().newInstance().loadInto(Warehouse.routes);
+//            Warehouse.groupsIndex.get(groupName).getConstructor().newInstance().loadInto
+//            (Warehouse.routes);
 //            Warehouse.groupsIndex.remove(groupName);
 //        }
 //
@@ -374,7 +401,7 @@ public class LogisticsCenter {
 
 
         List<Class<? extends IRouteGroup>> groupMetas = Warehouse.groupsIndex.get(groupName);
-        logger.info(TAG, "groupMetas."+groupMetas);
+        logger.info(TAG, "groupMetas." + groupMetas);
         if (Warehouse.groupsIndex.containsKey(groupName)) {
             // If this group is included, but it has not been loaded
             // load this group first, because dynamic route has high priority.

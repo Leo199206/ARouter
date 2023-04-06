@@ -45,6 +45,17 @@ public final class Postcard extends RouteMeta {
     private int enterAnim = -1;
     private int exitAnim = -1;
 
+    private boolean isAddRouteGroupDynamic=false;
+
+    public boolean isAddRouteGroupDynamic() {
+        return isAddRouteGroupDynamic;
+    }
+
+    public Postcard setAddRouteGroupDynamic(boolean addRouteGroupDynamic) {
+        isAddRouteGroupDynamic = addRouteGroupDynamic;
+        return this;
+    }
+
     public Bundle getOptionsBundle() {
         return optionsCompat;
     }
